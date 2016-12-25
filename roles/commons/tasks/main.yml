@@ -9,6 +9,7 @@
   - ufw
   - openssh-server
   - unzip
+  - python-pip
 
 - name: Besure ssh server is running
   service: 

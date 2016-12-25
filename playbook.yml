@@ -6,6 +6,10 @@
   gather_facts: yes
   vars:
   - test_mode: true
+  - domain: example.net
+  - admin:
+      name: sdorra
+      password: hallo123
   - static_sites:
     - name: example.com
     - name: www.example.net

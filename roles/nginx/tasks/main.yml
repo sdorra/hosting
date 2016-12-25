@@ -37,6 +37,16 @@
     src: nginx.conf.j2
     dest: /var/lib/nginx/nginx.conf
 
+- name: Install passlib python library for htpasswd
+  pip:
+    name: passlib
+
+- name: create htpasswd
+  htpasswd:
+    path:  /var/lib/nginx/.htpasswd
+    name: "{{ admin.name }}"
+    password: "{{ admin.password }}"
+
 - name: create site configuration directory
   file: 
     path: /var/lib/nginx/conf.d
@@ -47,11 +57,25 @@
     src: "{{ item }}.conf"
     dest: /var/lib/nginx/conf.d/{{ item }}.conf
   with_items:
-  - cadvisor
-  - prometheus
   - metrics
-  - grafana
-  - kibana
+
+- name: proxy configurations
+  template:
+    src: proxy.conf.j2
+    dest: /var/lib/nginx/conf.d/{{ item.name }}.conf
+  with_items:
+  - name: cadvisor
+    port: 8080
+    auth_required: false
+  - name: prometheus
+    port: 9090
+    auth_required: false
+  - name: grafana
+    port: 3000
+    auth_required: false
+  - name: kibana
+    port: 5601
+    auth_required: false
 
 - name: create site configuration
   template:

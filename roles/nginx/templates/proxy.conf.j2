@@ -1,0 +1,16 @@
+server {
+  listen       80;
+  server_name  {{item.name}}.{{domain}};
+
+  location / {
+    {% if item.auth_required %}
+    auth_basic "Restricted";
+    auth_basic_user_file /etc/nginx/.htpasswd
+    {% endif %}
+
+    proxy_set_header X-Real-IP  $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header Host $host;
+    proxy_pass http://{{item.name}}:{{item.port}};
+  }
+}
