@@ -1,0 +1,86 @@
+---
+
+- name: elk data directory
+  file: 
+    path: /var/lib/elk/data
+    state: directory
+
+- name: elk logstash directory
+  file: 
+    path: /var/lib/elk/logstash
+    state: directory
+
+- name: logstash configuration
+  copy: 
+    src: logstash.conf
+    dest: /var/lib/elk/logstash/logstash.conf
+
+#- name: Stat for GeoData
+#  stat: 
+#    path: /var/lib/elk/logstash/GeoLiteCity.dat
+#  register: geodata
+
+#- name: download GeoData
+#  get_url:
+#    url: http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+#    dest: /var/lib/elk/logstash/GeoLiteCity.dat.gz
+#  when: geodata.stat.exists == False
+
+#- name: unarchive GeoData
+#  shell: gunzip /var/lib/elk/logstash/GeoLiteCity.dat.gz
+#  when: geodata.stat.exists == False
+
+- name: elk logstash patterns directory
+  file: 
+    path: /var/lib/elk/logstash/patterns
+    state: directory
+
+- name: logstash grok-patterns
+  copy: 
+    src: grok-patterns
+    dest: /var/lib/elk/logstash/patterns/grok-patterns
+
+- name: logstash container
+  docker_container:
+    name: logstash
+    image: logstash:5.1.1-alpine
+    restart_policy: always
+    networks:
+    - name: network_one
+    command: -f /config-dir/logstash.conf
+    ports:
+    - "12201:12201/udp"
+    volumes:
+    - /var/lib/elk/logstash:/config-dir
+
+- name: elk data directory
+  file: 
+    path: /var/lib/elk/data
+    state: directory
+
+- name: set virtual memory
+  sysctl:
+    name: vm.max_map_count
+    value: 262144
+    state: present
+    reload: true
+
+- name: elasticsearch container
+  docker_container:
+    name: elasticsearch
+    image: elasticsearch:5.1.1-alpine
+    restart_policy: always
+    networks:
+    - name: network_one
+    volumes:
+    - /var/lib/elk/data:/usr/share/elasticsearch/data
+
+- name: kibana container
+  docker_container:
+    name: kibana
+    image: kibana:5.1.1
+    env:
+      ELASTICSEARCH_URL: http://elasticsearch:9200/
+    restart_policy: always
+    networks:
+    - name: network_one

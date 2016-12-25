@@ -1,0 +1,89 @@
+---
+
+- name: create site directories
+  file: 
+    path: /var/www/{{ item.name }}
+    state: directory
+  with_items:
+  - "{{ static_sites }}"
+
+- name: create sample index
+  template: 
+    src: index.html.j2
+    dest: /var/www/{{ item.name }}/index.html
+  with_items:
+  - "{{ static_sites }}"
+  when: "{{ test_mode }}"
+
+- name: create configuration directory
+  file: 
+    path: /var/lib/nginx
+    state: directory
+
+- name: clone nginx-lua-prometheus
+  git:
+    repo: https://github.com/knyar/nginx-lua-prometheus.git
+    dest: /var/lib/nginx/lua
+
+- name: copy static files
+  copy: 
+    src: "{{ item }}"
+    dest: /var/lib/nginx/{{ item }}
+  with_items:
+  - mime.types
+
+- name: create main configuration
+  template:
+    src: nginx.conf.j2
+    dest: /var/lib/nginx/nginx.conf
+
+- name: create site configuration directory
+  file: 
+    path: /var/lib/nginx/conf.d
+    state: directory
+
+- name: copy static site files
+  copy: 
+    src: "{{ item }}.conf"
+    dest: /var/lib/nginx/conf.d/{{ item }}.conf
+  with_items:
+  - cadvisor
+  - prometheus
+  - metrics
+  - grafana
+  - kibana
+
+- name: create site configuration
+  template:
+    src: static.conf.j2
+    dest: /var/lib/nginx/conf.d/{{ item.name }}.conf
+  with_items:
+  - "{{ static_sites }}"
+
+- name: nginx container
+  docker_container:
+    name: nginx
+    image: lebinh/nginx-lua:debian-stock
+    restart_policy: always
+    networks:
+    - name: network_one
+    ports:
+    - "80:80"
+    - "443:443"
+    volumes:
+    - /var/lib/nginx:/etc/nginx:ro
+    - /var/www:/var/www:ro
+    log_driver: gelf
+    log_options: 
+      gelf-address: udp://localhost:12201
+      tag: nginx
+
+- name: open port 80
+  ufw:
+    rule: allow
+    port: 80
+
+- name: open port 443
+  ufw:
+    rule: allow
+    port: 443

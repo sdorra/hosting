@@ -1,0 +1,18 @@
+---
+
+- hosts: all
+  user: vagrant
+  become: yes
+  gather_facts: yes
+  vars:
+  - test_mode: true
+  - static_sites:
+    - name: example.com
+    - name: www.example.net
+  roles:
+    - commons
+    - docker
+    - cadvisor
+    - prometheus
+    - elk
+    - nginx
