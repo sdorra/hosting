@@ -37,9 +37,10 @@
     src: nginx.conf.j2
     dest: /var/lib/nginx/nginx.conf
 
-- name: Install passlib python library for htpasswd
-  pip:
-    name: passlib
+- name: create jasas directory
+  file: 
+    path: /var/lib/jasas
+    state: directory
 
 - name: create htpasswd
   htpasswd:
@@ -64,18 +65,21 @@
     src: proxy.conf.j2
     dest: /var/lib/nginx/conf.d/{{ item.name }}.conf
   with_items:
+  - name: auth
+    port: 8000
+    auth_required: false
   - name: cadvisor
     port: 8080
-    auth_required: false
+    auth_required: true
   - name: prometheus
     port: 9090
-    auth_required: false
+    auth_required: true
   - name: grafana
     port: 3000
-    auth_required: false
+    auth_required: true
   - name: kibana
     port: 5601
-    auth_required: false
+    auth_required: true
 
 - name: create site configuration
   template:
@@ -84,10 +88,24 @@
   with_items:
   - "{{ static_sites }}"
 
+- name: auth container
+  docker_container:
+    name: auth
+    image: sdorra/jasas:0.1.0
+    restart_policy: always
+    env:
+      JASAS_DOMAIN: "{{ domain }}"
+      JASAS_JWK_PATH: /data/keys.jwk
+      JASAS_PASSWD_PATH: /data/passwd.db
+    networks:
+    - name: network_one
+    volumes:
+    - /var/lib/jasas:/data
+
 - name: nginx container
   docker_container:
     name: nginx
-    image: lebinh/nginx-lua:debian-stock
+    image: sdorra/nginx:1.11.8
     restart_policy: always
     networks:
     - name: network_one
@@ -97,10 +115,10 @@
     volumes:
     - /var/lib/nginx:/etc/nginx:ro
     - /var/www:/var/www:ro
-    log_driver: gelf
-    log_options: 
-      gelf-address: udp://localhost:12201
-      tag: nginx
+    #log_driver: gelf
+    #log_options: 
+    #  gelf-address: udp://localhost:12201
+    #  tag: nginx
 
 - name: open port 80
   ufw:
