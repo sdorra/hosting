@@ -1,5 +1,9 @@
 ---
 
+- name: Set timezone to Europe/Berlin
+  command: timedatectl set-timezone Europe/Berlin
+  when: ansible_date_time.tz != 'Europe/Berlin'
+
 - name: Install common packages
   package:
     name: "{{ item }}"
