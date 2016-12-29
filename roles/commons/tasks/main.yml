@@ -10,6 +10,12 @@
   - openssh-server
   - unzip
   - python-pip
+  - ntp
+
+- name: Besure ntp is running
+  service: 
+    name: ntp
+    state: running
 
 - name: Besure ssh server is running
   service: 
