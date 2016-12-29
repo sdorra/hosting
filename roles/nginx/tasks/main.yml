@@ -42,11 +42,19 @@
     path: /var/lib/jasas
     state: directory
 
-- name: create htpasswd
-  htpasswd:
-    path:  /var/lib/nginx/.htpasswd
-    name: "{{ admin.name }}"
-    password: "{{ admin.password }}"
+- name: check jasas passwd
+  command:
+    docker run --rm -v /var/lib/jasas:/data -e JASAS_PASSWD_PATH=/data/passwd.db sdorra/jasas:0.1.0 passwd exists {{ admin.name }}
+  register: passwd_result
+  no_log: True
+  ignore_errors: True
+  changed_when: False
+
+- name: add admin to jasas passwd
+  command:
+    docker run --rm -v /var/lib/jasas:/data -e JASAS_PASSWD_PATH=/data/passwd.db sdorra/jasas:0.1.0 passwd put {{ admin.name }} {{ admin.password }}
+  no_log: True
+  when: passwd_result.rc != 0
 
 - name: create site configuration directory
   file: 
@@ -115,10 +123,10 @@
     volumes:
     - /var/lib/nginx:/etc/nginx:ro
     - /var/www:/var/www:ro
-    #log_driver: gelf
-    #log_options: 
-    #  gelf-address: udp://localhost:12201
-    #  tag: nginx
+    log_driver: gelf
+    log_options: 
+      gelf-address: udp://localhost:12201
+      tag: nginx
 
 - name: open port 80
   ufw:

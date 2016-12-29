@@ -6,7 +6,7 @@ server {
   error_page 403 = @error403;
 
   location @error403 {
-      return 302 http://auth.{{domain}}?redirect_uri=$request_uri;
+      return 302 http://auth.{{domain}}?redirect_uri=$scheme://$http_host$request_uri;
   }
 
   auth_request /v1/validation;
