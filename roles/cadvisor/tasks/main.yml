@@ -12,8 +12,3 @@
     - /var/run:/var/run:rw
     - /sys:/sys:ro
     - /var/lib/docker/:/var/lib/docker:ro
-
-- name: open port 8080
-  ufw:
-    rule: allow
-    port: 8080
