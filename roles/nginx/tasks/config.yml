@@ -12,7 +12,14 @@
     src: nginx.conf.j2
     dest: /var/lib/nginx/nginx.conf
 
+- name: copy gzip include file
+  copy:
+    src: gzip.conf
+    dest: /var/lib/nginx/include.d/gzip.conf
+
 - name: copy ssl redirector
   copy:
     src: ssl-redirect.conf
     dest: /var/lib/nginx/conf.d/ssl-redirect.conf
+  when:
+    ssl_mode != "none"

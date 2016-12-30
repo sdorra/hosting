@@ -5,6 +5,11 @@
     repo: https://github.com/knyar/nginx-lua-prometheus.git
     dest: /var/lib/nginx/lua
 
+- name: copy prometheus include file
+  copy:
+    src: prometheus.conf
+    dest: /var/lib/nginx/include.d/prometheus.conf
+
 - name: copy metrics configuration
   copy: 
     src: metrics.conf

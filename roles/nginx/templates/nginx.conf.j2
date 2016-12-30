@@ -2,9 +2,8 @@ user  nginx;
 worker_processes  2;
 worker_rlimit_nofile 8192;
 
-# error_log  /var/log/nginx/error/error.log warn;
+error_log  /var/log/nginx/error.log warn;
 pid        /var/run/nginx.pid;
-
 
 events {
     worker_connections 4096;
@@ -29,30 +28,8 @@ http {
 
     server_tokens off;
 
-    # enable nginx
-    gzip on;
-    gzip_disable "MSIE [1-6]\.(?!.*SV1)";
-    gzip_proxied any;
-    gzip_buffers 16 8k;
-    gzip_types text/plain text/html text/css text/xml application/javascript application/x-javascript application/xml application/xml+rss text/javascript;
-    gzip_vary on;
-
-    # prometheus
-
-    lua_shared_dict prometheus_metrics 10M;
-    lua_package_path "/etc/nginx/lua/prometheus.lua";
-    init_by_lua '
-      prometheus = require("prometheus").init("prometheus_metrics")
-      metric_requests = prometheus:counter(
-        "nginx_http_requests_total", "Number of HTTP requests", {"host", "status"})
-      metric_latency = prometheus:histogram(
-        "nginx_http_request_duration_seconds", "HTTP request latency", {"host"})
-    ';
-    log_by_lua '
-      local host = ngx.var.host:gsub("^www.", "")
-      metric_requests:inc(1, {host, ngx.var.status})
-      metric_latency:observe(ngx.now() - ngx.req.start_time(), {host})
-    ';
+    include /etc/nginx/include.d/gzip.conf;
+    include /etc/nginx/include.d/prometheus.conf;
 
     # include sites
     include /etc/nginx/conf.d/*.conf;
