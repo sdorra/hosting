@@ -1,0 +1,19 @@
+---
+
+- name: grafana directory
+  file: 
+    path: /var/lib/grafana
+    state: directory
+
+- name: grafana container
+  docker_container:
+    name: grafana
+    image: grafana/grafana:4.0.2
+    restart_policy: always
+    networks:
+    - name: network_one
+    env:
+      GF_AUTH_ANONYMOUS_ENABLED: true
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+    volumes:
+    - /var/lib/grafana:/var/lib/grafana

@@ -1,0 +1,27 @@
+---
+
+- name: prometheus directory
+  file: 
+    path: /var/lib/prometheus
+    state: directory
+
+- name: prometheus configuration
+  copy:
+    src: configuration.yml
+    dest: /var/lib/prometheus/configuration.yml
+
+- name: prometheus data directory
+  file: 
+    path: /var/lib/prometheus/data
+    state: directory
+
+- name: prometheus container
+  docker_container:
+    name: prometheus
+    image: prom/prometheus:v1.4.1
+    restart_policy: always
+    networks:
+    - name: network_one
+    volumes:
+    - /var/lib/prometheus/configuration.yml:/etc/prometheus/prometheus.yml:ro
+    - /var/lib/prometheus/data:/prometheus-data
