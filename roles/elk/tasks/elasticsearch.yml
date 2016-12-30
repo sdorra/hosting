@@ -1,0 +1,23 @@
+---
+
+- name: elk data directory
+  file: 
+    path: /var/lib/elk/data
+    state: directory
+
+- name: set virtual memory
+  sysctl:
+    name: vm.max_map_count
+    value: 262144
+    state: present
+    reload: true
+
+- name: elasticsearch container
+  docker_container:
+    name: elasticsearch
+    image: elasticsearch:5.1.1-alpine
+    restart_policy: always
+    networks:
+    - name: network_one
+    volumes:
+    - /var/lib/elk/data:/usr/share/elasticsearch/data
