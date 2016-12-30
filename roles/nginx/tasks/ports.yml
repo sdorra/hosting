@@ -1,0 +1,11 @@
+---
+
+- name: open port 80
+  ufw:
+    rule: allow
+    port: 80
+
+- name: open port 443
+  ufw:
+    rule: allow
+    port: 443

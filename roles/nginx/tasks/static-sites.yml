@@ -1,0 +1,28 @@
+---
+
+- name: create site directories
+  file: 
+    path: /var/www/{{ item.name }}
+    state: directory
+  with_items:
+  - "{{ static_sites }}"
+
+- name: create site configuration directory
+  file: 
+    path: /var/lib/nginx/conf.d
+    state: directory
+
+- name: create site configurations
+  template:
+    src: static.conf.j2
+    dest: /var/lib/nginx/conf.d/{{ item.name }}.conf
+  with_items:
+  - "{{ static_sites }}"
+
+- name: create sample index pages
+  template: 
+    src: index.html.j2
+    dest: /var/www/{{ item.name }}/index.html
+  with_items:
+  - "{{ static_sites }}"
+  when: "{{ test_mode }}"

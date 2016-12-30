@@ -1,0 +1,34 @@
+---
+
+- name: create jasas directory
+  file: 
+    path: /var/lib/jasas
+    state: directory
+
+- name: check jasas passwd
+  command:
+    docker run --rm -v /var/lib/jasas:/data -e JASAS_PASSWD_PATH=/data/passwd.db sdorra/jasas:{{ jasas_version }} passwd exists {{ admin.name }}
+  register: passwd_result
+  no_log: True
+  ignore_errors: True
+  changed_when: False
+
+- name: add admin to jasas passwd
+  command:
+    docker run --rm -v /var/lib/jasas:/data -e JASAS_PASSWD_PATH=/data/passwd.db sdorra/jasas:{{ jasas_version }} passwd put {{ admin.name }} {{ admin.password }}
+  no_log: True
+  when: passwd_result.rc != 0
+
+- name: auth container
+  docker_container:
+    name: auth
+    image: sdorra/jasas:0.1.0
+    restart_policy: always
+    env:
+      JASAS_DOMAIN: "{{ domain }}"
+      JASAS_JWK_PATH: /data/keys.jwk
+      JASAS_PASSWD_PATH: /data/passwd.db
+    networks:
+    - name: network_one
+    volumes:
+    - /var/lib/jasas:/data

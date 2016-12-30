@@ -1,0 +1,13 @@
+---
+
+- name: copy static files
+  copy: 
+    src: "{{ item }}"
+    dest: /var/lib/nginx/{{ item }}
+  with_items:
+  - mime.types
+
+- name: create main configuration
+  template:
+    src: nginx.conf.j2
+    dest: /var/lib/nginx/nginx.conf
