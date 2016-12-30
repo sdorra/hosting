@@ -1,0 +1,26 @@
+---
+
+- name: create ssl directory
+  file: 
+    path: /var/lib/nginx/ssl
+    state: directory
+
+- name: copy ssl selfsigned include file
+  copy:
+    src: ssl-selfsigned.conf
+    dest: /var/lib/nginx/include.d/ssl-selfsigned.conf
+
+- name: Creating self-signed server SSL cert
+  command: >
+    openssl req -new
+      -x509
+      -nodes
+      -extensions v3_ca
+      -days {{ item.days | default(3650) }}
+      -subj "/C={{ item.country | default('') }}/ST={{ item.state | default('') }}/L={{ item.city | default('') }}/O={{ item.organization | default('') }}/OU={{ item.unit | default('') }}{% if item.domains is defined %}{% for domain in item.domains %}/CN={{ domain }}{% endfor %}{% else %}/CN={{ item.name }}{% endif %}/emailAddress={{ item.email | default('') }}"
+      -keyout /var/lib/nginx/ssl/server.key
+      -out /var/lib/nginx/ssl/server.crt
+  args:
+    creates: "/var/lib/nginx/ssl/server.crt"
+  with_items:
+  - "{{ ssl_self_signed_cert }}"

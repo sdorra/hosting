@@ -1,0 +1,15 @@
+---
+- name: create configuration directory
+  file: 
+    path: /var/lib/nginx
+    state: directory
+
+- name: create include directory
+  file: 
+    path: /var/lib/nginx/include.d
+    state: directory
+
+- name: create site configuration directory
+  file: 
+    path: /var/lib/nginx/conf.d
+    state: directory

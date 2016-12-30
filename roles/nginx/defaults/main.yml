@@ -1,3 +1,13 @@
 ---
 jasas_version: 0.1.0
 nginx_version: 1.11.8
+
+ssl_self_signed_cert:
+  days: 3650
+  state: ""
+  city: ""
+  organisation: ""
+  organizational_unit: ""
+  email: "admin@{{ domain }}"
+  domains:
+  - "{{ domain }}"

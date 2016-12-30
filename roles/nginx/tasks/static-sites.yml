@@ -7,11 +7,6 @@
   with_items:
   - "{{ static_sites }}"
 
-- name: create site configuration directory
-  file: 
-    path: /var/lib/nginx/conf.d
-    state: directory
-
 - name: create site configurations
   template:
     src: static.conf.j2

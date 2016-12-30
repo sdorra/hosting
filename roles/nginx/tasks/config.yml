@@ -11,3 +11,8 @@
   template:
     src: nginx.conf.j2
     dest: /var/lib/nginx/nginx.conf
+
+- name: copy ssl redirector
+  copy:
+    src: ssl-redirect.conf
+    dest: /var/lib/nginx/conf.d/ssl-redirect.conf

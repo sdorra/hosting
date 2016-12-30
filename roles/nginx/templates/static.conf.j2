@@ -1,8 +1,10 @@
 server {
-  listen       80;
   server_name  {{ item.name }};
-
-  # access_log  /var/log/nginx/{{ item.name }}/access.log  main;
+  {% if ssl_mode == "none" %}
+  listen 80;
+  {% elif ssl_mode == "selfsigned" %}
+  include /etc/nginx/include.d/ssl-selfsigned.conf;
+  {% endif %}
 
   location / {
     root   /var/www/{{ item.name }};

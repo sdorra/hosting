@@ -1,12 +1,16 @@
 server {
-  listen       80;
-  server_name  {{item.name}}.{{domain}};
+  server_name {{item.name}}.{{domain}};
+  {% if ssl_mode == "none" %}
+  listen 80;
+  {% elif ssl_mode == "selfsigned" %}
+  include /etc/nginx/include.d/ssl-selfsigned.conf;
+  {% endif %}
 
   {% if item.auth_required %}
   error_page 403 = @error403;
 
   location @error403 {
-      return 302 http://auth.{{domain}}?redirect_uri=$scheme://$http_host$request_uri;
+      return 302 http{% if ssl_mode != "none" %}s{% endif %}://auth.{{domain}}?redirect_uri=$scheme://$http_host$request_uri;
   }
 
   auth_request /v1/validation;

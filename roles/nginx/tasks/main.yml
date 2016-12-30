@@ -1,11 +1,10 @@
 ---
-
-- name: create configuration directory
-  file: 
-    path: /var/lib/nginx
-    state: directory
-
+- include: directories.yml
 - include: auth.yml
+
+- include: ssl-selfsigned.yml
+  when: ssl_mode == "selfsigned"
+
 - include: config.yml
 - include: static-sites.yml
 - include: metrics.yml
