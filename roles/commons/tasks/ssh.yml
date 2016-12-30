@@ -1,0 +1,11 @@
+---
+
+- name: Besure ssh server is running
+  service: 
+    name: ssh 
+    state: running
+
+- name: Open ssh port
+  ufw:
+    rule: allow
+    port: 22

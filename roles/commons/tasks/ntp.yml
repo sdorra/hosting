@@ -1,0 +1,6 @@
+---
+
+- name: Besure ntp is running
+  service: 
+    name: ntp
+    state: running

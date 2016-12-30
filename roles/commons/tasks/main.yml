@@ -1,32 +1,6 @@
 ---
 
-- name: Set timezone to Europe/Berlin
-  command: timedatectl set-timezone Europe/Berlin
-  when: ansible_date_time.tz != 'Europe/Berlin'
-
-- name: Install common packages
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-  - htop
-  - ufw
-  - openssh-server
-  - unzip
-  - python-pip
-  - ntp
-
-- name: Besure ntp is running
-  service: 
-    name: ntp
-    state: running
-
-- name: Besure ssh server is running
-  service: 
-    name: ssh 
-    state: running
-
-- name: Open ssh port
-  ufw:
-    rule: allow
-    port: 22
+- include: timezone.yml
+- include: packages.yml
+- include: ntp.yml
+- include: ssh.yml

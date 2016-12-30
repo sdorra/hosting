@@ -1,0 +1,9 @@
+---
+
+- name: Capture Timezone
+  set_fact:
+    captured_timezone:  "{{ lookup('file', '/etc/timezone') }}"
+
+- name: Set timezone to {{ timezone }}
+  command: timedatectl set-timezone {{ timezone }}
+  when: captured_timezone != timezone
