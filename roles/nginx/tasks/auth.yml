@@ -22,7 +22,7 @@
 - name: auth container
   docker_container:
     name: auth
-    image: sdorra/jasas:0.1.0
+    image: sdorra/jasas:{{ jasas_version }}
     restart_policy: always
     env:
       JASAS_DOMAIN: "{{ domain }}"

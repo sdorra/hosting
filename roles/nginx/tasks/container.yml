@@ -3,7 +3,7 @@
 - name: nginx container
   docker_container:
     name: nginx
-    image: sdorra/nginx:1.11.8
+    image: sdorra/nginx:{{ nginx_version }}
     restart_policy: always
     networks:
     - name: network_one

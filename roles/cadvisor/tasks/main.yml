@@ -3,7 +3,7 @@
 - name: cadvisor container
   docker_container:
     name: cadvisor
-    image: google/cadvisor:v0.24.1
+    image: google/cadvisor:{{ cadvisor_version }}
     networks:
     - name: network_one
     restart_policy: always

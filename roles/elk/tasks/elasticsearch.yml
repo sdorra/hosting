@@ -15,7 +15,7 @@
 - name: elasticsearch container
   docker_container:
     name: elasticsearch
-    image: elasticsearch:5.1.1-alpine
+    image: elasticsearch:{{ elasticsearch_version }}
     restart_policy: always
     networks:
     - name: network_one

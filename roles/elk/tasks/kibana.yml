@@ -3,7 +3,7 @@
 - name: kibana container
   docker_container:
     name: kibana
-    image: kibana:5.1.1
+    image: kibana:{{ kibana_version }}
     env:
       ELASTICSEARCH_URL: http://elasticsearch:9200/
     restart_policy: always

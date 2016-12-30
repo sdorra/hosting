@@ -1,0 +1,4 @@
+---
+logstash_version: 5.1.1-alpine
+kibana_version: 5.1.1
+elasticsearch_version: 5.1.1-alpine

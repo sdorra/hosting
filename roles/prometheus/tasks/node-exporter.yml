@@ -3,7 +3,7 @@
 - name: node-exporter container
   docker_container:
     name: node-exporter
-    image: quay.io/prometheus/node-exporter:v0.13.0
+    image: quay.io/prometheus/node-exporter:{{ node_exporter_version }}
     restart_policy: always
     networks:
     - name: network_one
