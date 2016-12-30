@@ -54,5 +54,6 @@
     - name: network_one
     env:
       GF_AUTH_ANONYMOUS_ENABLED: true
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
     volumes:
     - /var/lib/grafana:/var/lib/grafana
