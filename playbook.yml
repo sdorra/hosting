@@ -6,7 +6,7 @@
   gather_facts: yes
   vars:
   - test_mode: true
-  - ssl_mode: selfsigned
+  - ssl_mode: letsencrypt
   - domain: example.net
   - admin:
       name: sdorra

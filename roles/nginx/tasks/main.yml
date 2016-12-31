@@ -3,7 +3,10 @@
 - include: auth.yml
 
 - include: ssl-selfsigned.yml
-  when: ssl_mode == "selfsigned"
+  when: ssl_mode != "none"
+
+- include: ssl-letsencrypt-main.yml
+  when: ssl_mode == "letsencrypt"
 
 - include: config.yml
 - include: static-sites.yml

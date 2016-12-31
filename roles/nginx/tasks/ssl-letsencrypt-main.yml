@@ -1,0 +1,32 @@
+---
+
+- name: copy ssl letsencrypt include file
+  copy:
+    src: ssl-letsencrypt.conf
+    dest: /var/lib/nginx/include.d/ssl-letsencrypt.conf
+
+- name: create ssl directory
+  file: 
+    path: /var/lib/nginx/ssl
+    state: directory
+
+- name: create dhparams
+  command:
+    openssl dhparam -out /var/lib/nginx/ssl/dhparam.pem {{ dhparam_bits }}
+  args:
+    creates: "/var/lib/nginx/ssl/dhparam.pem"
+
+- name: create le directory
+  file: 
+    path: /var/lib/nginx/le
+    state: directory
+
+- name: create le live directory
+  file: 
+    path: /var/lib/nginx/le/live
+    state: directory
+
+- name: create certificates
+  include: ssl-letsencrypt.yml
+  with_items:
+  - "{{ system_pages }}"

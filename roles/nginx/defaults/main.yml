@@ -4,6 +4,7 @@ nginx_version: 1.11.8
 
 ssl_self_signed_cert:
   days: 3650
+  country: ""
   state: ""
   city: ""
   organisation: ""
@@ -11,3 +12,5 @@ ssl_self_signed_cert:
   email: "admin@{{ domain }}"
   domains:
   - "{{ domain }}"
+
+dhparam_bits: 2048

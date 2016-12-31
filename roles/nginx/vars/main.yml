@@ -1,0 +1,17 @@
+---
+system_pages:
+- name: auth
+  port: 8000
+  auth_required: false
+- name: cadvisor
+  port: 8080
+  auth_required: true
+- name: prometheus
+  port: 9090
+  auth_required: true
+- name: grafana
+  port: 3000
+  auth_required: true
+- name: kibana
+  port: 5601
+  auth_required: true

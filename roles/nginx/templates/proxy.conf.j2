@@ -1,9 +1,16 @@
 server {
   server_name {{item.name}}.{{domain}};
-  {% if ssl_mode == "none" %}
-  listen 80;
-  {% elif ssl_mode == "selfsigned" %}
+  {% if ssl_mode == "selfsigned" %}
   include /etc/nginx/include.d/ssl-selfsigned.conf;
+  {% elif ssl_mode == "letsencrypt" %}
+  include /etc/nginx/include.d/ssl-letsencrypt.conf;
+  
+  # include le certificates
+  ssl_certificate /etc/nginx/le/live/{{item.name}}.{{domain}}/fullchain.pem;
+  ssl_certificate_key /etc/nginx/le/live/{{item.name}}.{{domain}}/privkey.pem;
+
+  {% else %}
+  listen 80;
   {% endif %}
 
   {% if item.auth_required %}

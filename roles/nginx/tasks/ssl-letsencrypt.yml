@@ -1,0 +1,19 @@
+---
+
+- name: "create certificate directory for page {{item.name}}.{{domain}}"
+  file: 
+    path: "/var/lib/nginx/le/live/{{item.name}}.{{domain}}"
+    state: directory
+
+- name: "creating temporary self-signed server certificate for page {{item.name}}.{{domain}}"
+  command: >
+    openssl req -new
+      -x509
+      -nodes
+      -extensions v3_ca
+      -days {{ ssl_self_signed_cert.days }}
+      -subj "/C={{ ssl_self_signed_cert.country }}/ST={{ ssl_self_signed_cert.state }}/L={{ ssl_self_signed_cert.city }}/O={{ ssl_self_signed_cert.organisation }}/OU={{ ssl_self_signed_cert.organizational_unit }}/CN={{item.name}}.{{domain}}/emailAddress={{ ssl_self_signed_cert.email }}"
+      -keyout /var/lib/nginx/le/live/{{item.name}}.{{domain}}/privkey.pem
+      -out /var/lib/nginx/le/live/{{item.name}}.{{domain}}/fullchain.pem
+  args:
+    creates: "/var/lib/nginx/le/live/{{item.name}}.{{domain}}/fullchain.pem"
